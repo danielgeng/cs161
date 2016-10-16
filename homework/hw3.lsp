@@ -122,9 +122,7 @@
   (t (if (or (isKeeper (car r)) (isKeeperStar (car r)))
       col
       (getKeeperColumn (cdr r) (+ col 1))
-      )
-    )
-  )
+  )))
 )
 
 ;
@@ -151,16 +149,18 @@
 ; For example, if l is '(1 2 NIL 3 NIL), returns '(1 2 3).
 ;
 (defun cleanUpList (L)
-  (cond ((null L) nil)
-  (t (let (
-    (cur (car L))
-    (res (cleanUpList (cdr L)))
+  (cond 
+    ((null L) nil)
+    (t (let (
+      (cur (car L))
+      (res (cleanUpList (cdr L)))
     )
-    (if cur
-      (cons cur res)
-      res
-    )
-  )))
+      (if cur
+        (cons cur res)
+        res
+      )
+    ))
+  )
 )
 
 ; EXERCISE: Modify this function to return true (t)
@@ -172,7 +172,19 @@
 ; terminate until the whole search space is exhausted.
 ;
 (defun goal-test (s)
-  nil
+  (cond
+    ((null s) t)
+    (t (and (goal-test_helper (car s)) (goal-test (cdr s))))
+  )
+)
+
+; helper function for iterating rows
+(defun goal-test_helper (s)
+  (cond
+    ((null s) t)
+    ((isBox (car s)) nil)
+    (t (goal-test_helper (cdr s)))
+  )
 )
 
 ; EXERCISE: Modify this function to return the list of
@@ -194,29 +206,158 @@
 ; Any NIL result returned from try-move can be removed by cleanUpList.
 ;
 (defun next-states (s)
+  (cleanUpList (list
+    (try_move s 'up)
+    (try_move s 'down)
+    (try_move s 'left)
+    (try_move s 'right)
+  ))
+)
+
+; returns the contents at the specified coordinates
+(defun get_square (s r c)
+  (cond
+    ((null s) wall)
+    ((or (< r 0) (< c 0) (> r (max_row s)) (> c (max_col s))) wall)
+    ((> r 0) (get_square (cdr s) (- r 1) c))
+    ((> c 0) (get_square (list (cdr (car s))) r (- c 1)))
+    (t (car (car s)))
+  )
+)
+
+; returns the max row index of the state
+(defun max_row (s)
+  (- (length s) 1)
+)
+
+; returns the max column index of the state
+(defun max_col (s)
+  (- (length (car s)) 1)
+)
+
+; returns the size of the grid
+(defun grid_size (s)
+  (* (length s) (length (car s)))
+)
+
+; sets the contents at the specified coordinates to v
+(defun set_square (s r c v)
+  (cond
+    ((> r 0) (cons (car s) (set_square (cdr s) (- r 1) c v)))
+    (t (cons (set_square_helper (car s) c v) (cdr s)))
+  )
+)
+
+; helper function for setting item once row is found
+(defun set_square_helper (s c v)
+  (cond
+    ((> c 0) (cons (car s) (set_square_helper (cdr s) (- c 1) v)))
+    (t (cons v (cdr s)))
+  )
+)
+
+; returns the state when moving in the current direction if the move is valid
+; else returns nil
+(defun try_move (s d)
   (let* (
     (pos (getKeeperPosition s 0))
-    (x (car pos))
-    (y (cadr pos))
-    ;x and y are now the coordinate of the keeper in s.
-    (result nil)
+    (r (cadr pos))
+    (c (car pos)))
+  (cond
+    ((equal d 'up) (make_move s r c (- r 1) c (- r 2) c))
+    ((equal d 'down) (make_move s r c (+ r 1) c (+ r 2) c))
+    ((equal d 'left) (make_move s r c r (- c 1) r (- c 2)))
+    ((equal d 'right) (make_move s r c r (+ c 1) r (+ c 2)))
+    (t nil)
+  ))
+)
+
+; returns a status code for moving from (r, c) to (r1, c1)
+; 0 -> invalid move
+; 1 -> move keeper
+; 2 -> move keeper and block
+; input parameters:
+; (r, c) -> original position
+; (r1, c1) -> position when moving to given direction by 1
+; (r2, c2) -> position when moving to given direction by 2
+(defun move_status (s r c r1 c1 r2 c2)
+  (cond
+    ; can't move into a wall
+    ((isWall (get_square s r1 c1)) 0)
+    ((has_box (get_square s r1 c1))
+      (cond
+        ; can't push box into a square with a wall or another box
+        ((or (has_box (get_square s r2 c2)) (isWall (get_square s r2 c2))) 0)
+        (t 2) ; valid move: move box and keeper
+      )
+    )
+    (t 1) ; valid move: keeper only
   )
-  (cleanUpList result) ;end
-  )
+)
+
+; attempts to make a move from (r, c) to (r1, c1)
+; returns new state on success, else nil
+(defun make_move (s r c r1 c1 r2 c2)
+  ; check if the move is valid
+  (let ((status (move_status s r c r1 c1 r2 c2)))
+  (if (= status 0)
+    nil
+    (or
+      ; set orig square
+      (let ((s1
+        (if
+          (isKeeperStar (get_square s r c))
+          (set_square s r c star)
+          (set_square s r c blank)
+        )
+      ))
+      ; set square keeper is moving into
+      (let ((s2
+        (if
+          (has_star (get_square s r1 c1))
+          (set_square s1 r1 c1 keeperstar)
+          (set_square s1 r1 c1 keeper)
+        )
+      ))
+      ; set box square if needed
+      (if (= status 2)
+        (if 
+          (isStar (get_square s r2 c2))
+          (set_square s2 r2 c2 boxstar)
+          (set_square s2 r2 c2 box)
+        )
+        s2
+      )
+    ))
+  )))
+)
+
+; checks if the square has a box
+(defun has_box (v)
+  (or (isBox v) (isBoxStar v))
+)
+
+; checks if the square has a star
+(defun has_star (v)
+  (or (isStar v) (isBoxStar v))
 )
 
 ; EXERCISE: Modify this function to compute the trivial
 ; admissible heuristic.
 ;
-(defun h0 (s)
-
+(defun h0 (s) 
+  0
 )
 
 ; EXERCISE: Modify this function to compute the
 ; number of misplaced boxes in s.
 ;
 (defun h1 (s)
-
+  (cond
+    ((null s) 0)
+    ((atom s) (if (isBox s) 1 0))
+    (t (+ (h1 (car s)) (h1 (cdr s))))
+  )
 )
 
 ; EXERCISE: Change the name of this function to h<UID> where
@@ -228,8 +369,123 @@
 ; The Lisp 'time' function can be used to measure the
 ; running time of a function call.
 ;
-(defun hUID (s)
 
+; finds manhattan distance between each box to the nearest goal
+; doesn't account for unpassable squares
+(defun h504588536 (s)
+  (h_helper (box_cntr s 0) (goal_cntr s 0) s)
+)
+
+; gets a list of positions for all boxes
+(defun box_cntr (s r)
+  (cond
+    ((null s) nil)
+    (t (append 
+      (box_cntr_helper (car s) r 0)
+      (box_cntr (cdr s) (+ r 1))
+    ))
+  )
+)
+
+; helper function for each row
+(defun box_cntr_helper (s r c)
+  (cond
+    ((null s) nil)
+    ((atom s) (if (isBox s) (list (list r c))))
+    (t (append
+      (box_cntr_helper (car s) r c)
+      (box_cntr_helper (cdr s) r (+ c 1))
+    ))
+  )
+)
+
+; gets a list of positions for all goals
+(defun goal_cntr (s r)
+  (cond
+    ((null s) nil)
+    (t (append 
+      (goal_cntr_helper (car s) r 0)
+      (goal_cntr (cdr s) (+ r 1))
+    ))
+  )
+)
+
+(defun goal_cntr_helper (s r c)
+  (cond
+    ((null s) nil)
+    ((atom s) (if (isStar s) (list (list r c))))
+    (t (append
+      (goal_cntr_helper (car s) r c)
+      (goal_cntr_helper (cdr s) r (+ c 1))
+    ))
+  )
+)
+
+; returns manhattan distance between (r, c) and (r1, c1)
+(defun dist (r c r1 c1)
+  (cond
+    ; same row
+    ((= r1 r)
+      (cond
+        ; same col
+        ((= c1 c) 0)
+        ((> c1 c) (- c1 c))
+        (t (- c c1) 1)
+      )
+    )
+    ((> r1 r)
+      (cond
+        ((= c1 c) (- r1 r))
+        ((> c1 c) (+ (- r1 r) (- c1 c)))
+        (t (+ (- r1 r) (- c c1)))
+      )
+    )
+    (t
+      (cond
+        ((= c1 c) (- r r1))
+        ((> c1 c) (+ (- r r1) (- c1 c)))
+        (t (+ (- r r1) (- c c1)))
+      )
+    )
+  )
+)
+
+; returns total distance of boxes to nearest goals (in manhattan distance)
+(defun h_helper (boxes goals s)
+  (cond
+    ((null boxes) 0)
+    ((null goals) 0)
+    (t (+ (box_dist (car boxes) goals nil s) (h_helper (cdr boxes) goals s)))
+  )
+)
+
+; returns distance from box to nearest goal (in manhattan distance)
+(defun box_dist (box goals dists s)
+  (cond
+    ((null goals) (get_min dists (grid_size s)))
+    (t 
+      (box_dist
+        box
+        (cdr goals)
+        (append 
+          dists
+          (list (
+            dist (car box) (cadr box) (car (car goals)) (cadr (car goals)))
+          )
+        )
+        s
+      )
+    )
+  )
+)
+
+; returns the minimum from a list
+(defun get_min (l m)
+  (cond
+    ((null l) m)
+    ((< (car l) m) (get_min (cdr l) (car l)))
+    (t (get_min (cdr l) m))
+  )
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

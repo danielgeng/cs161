@@ -423,30 +423,12 @@
 
 ; returns manhattan distance between (r, c) and (r1, c1)
 (defun dist (r c r1 c1)
-  (cond
-    ; same row
-    ((= r1 r)
-      (cond
-        ; same col
-        ((= c1 c) 0)
-        ((> c1 c) (- c1 c))
-        (t (- c c1) 1)
-      )
-    )
-    ((> r1 r)
-      (cond
-        ((= c1 c) (- r1 r))
-        ((> c1 c) (+ (- r1 r) (- c1 c)))
-        (t (+ (- r1 r) (- c c1)))
-      )
-    )
-    (t
-      (cond
-        ((= c1 c) (- r r1))
-        ((> c1 c) (+ (- r r1) (- c1 c)))
-        (t (+ (- r r1) (- c c1)))
-      )
-    )
+  (let* (
+    (delta_r (- r r1))
+    (delta_c (- c c1))
+    (dr (if (< delta_r 0) (* delta_r -1) delta_r))
+    (dc (if (< delta_c 0) (* delta_c -1) delta_c)))
+  (+ dr dc)
   )
 )
 

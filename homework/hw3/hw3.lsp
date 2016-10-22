@@ -352,6 +352,7 @@
 ; EXERCISE: Modify this function to compute the
 ; number of misplaced boxes in s.
 ;
+; h1 is admissable
 (defun h1 (s)
   (cond
     ((null s) 0)

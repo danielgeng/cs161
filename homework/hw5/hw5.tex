@@ -1,0 +1,183 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[margin={1in}]{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for rotated page geometry
+\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\setlength{\headsep}{5pt}
+\usepackage{mathtools}
+\pagenumbering{gobble}
+
+%SetFonts
+
+%SetFonts
+
+
+\title{CS 161: Homework \# 5}
+\author{Daniel Geng\\ID: 504588536}
+\date{Fall 2016}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+
+\textbf{1)}
+
+\begin{tabular}{ c | c | c | c }
+$P$ & $Q$ & $P \implies \neg Q$ & $Q \implies \neg P$ \\
+\hline
+0 & 0 & \textbf{1} & \textbf{1} \\
+0 & 1 & \textbf{1} & \textbf{1} \\
+1 & 0 & \textbf{1} & \textbf{1} \\
+1 & 1 & \textbf{0} & \textbf{0} 
+\end{tabular}
+
+$P \implies \neg Q$ and $Q \implies \neg P$ are equivalent.
+
+\begin{tabular}{ c | c | c | c }
+$P$ & $Q$ & $P \iff \neg Q$ & $((P \land \neg Q) \lor (\neg P \land Q))$ \\
+\hline
+0 & 0 & \textbf{0} & \textbf{0} \\
+0 & 1 & \textbf{1} & \textbf{1} \\
+1 & 0 & \textbf{1} & \textbf{1} \\
+1 & 1 & \textbf{0} & \textbf{0} 
+\end{tabular}
+
+$P \iff \neg Q$ and $((P \land \neg Q) \lor (\neg P \land Q))$ are equivalent.
+
+\textbf{2)}
+
+\begin{tabular}{ c | c | c | c | c}
+& & $[\alpha]$ & $[\beta]$ & \\
+$S$ & $F$ & $S \implies F$ & $\neg S \implies \neg F$ & $\alpha \implies \beta$ \\
+\hline
+0 & 0 & \textbf{1} & \textbf{1} & \textbf{1} \\
+0 & 1 & \textbf{1} & \textbf{0} & \textbf{0} \\
+1 & 0 & \textbf{0} & \textbf{1} & \textbf{1} \\
+1 & 1 & \textbf{1} & \textbf{1} & \textbf{1}
+\end{tabular}
+
+Invalid, but satisfiable.
+
+\begin{tabular}{ c | c | c | c | c | c}
+& & & $[\alpha]$ & $[\beta]$ & \\
+$S$ & $F$ & $H$ & $S \implies F$ & $\neg S \implies \neg F$ & $\alpha \implies \beta$ \\
+\hline
+0 & 0 & 0 & \textbf{1} & \textbf{1} & \textbf{1} \\
+0 & 0 & 1 & \textbf{1} & \textbf{0} & \textbf{0} \\
+0 & 1 & 0 & \textbf{1} & \textbf{1} & \textbf{1} \\
+0 & 1 & 1 & \textbf{1} & \textbf{1} & \textbf{1} \\
+1 & 0 & 0 & \textbf{0} & \textbf{0} & \textbf{1} \\
+1 & 0 & 1 & \textbf{0} & \textbf{0} & \textbf{1} \\
+1 & 1 & 0 & \textbf{1} & \textbf{1} & \textbf{1} \\
+1 & 1 & 1 & \textbf{1} & \textbf{1} & \textbf{1} 
+\end{tabular}
+
+Invalid, but satisfiable.
+
+\begin{tabular}{ c | c | c | c | c | c}
+& & & $[\alpha]$ & $[\beta]$ & \\
+$S$ & $F$ & $H$ & $(S \lor H) \implies F$ & $(S \implies F) \lor (H \implies F)$ & $\alpha \iff \beta$ \\
+\hline
+0 & 0 & 0 & \textbf{1} & \textbf{1} & \textbf{1} \\
+0 & 0 & 1 & \textbf{1} & \textbf{1} & \textbf{1} \\
+0 & 1 & 0 & \textbf{1} & \textbf{1} & \textbf{1} \\
+0 & 1 & 1 & \textbf{1} & \textbf{1} & \textbf{1} \\
+1 & 0 & 0 & \textbf{1} & \textbf{1} & \textbf{1} \\
+1 & 0 & 1 & \textbf{0} & \textbf{0} & \textbf{1} \\
+1 & 1 & 0 & \textbf{1} & \textbf{1} & \textbf{1} \\
+1 & 1 & 1 & \textbf{1} & \textbf{1} & \textbf{1} 
+\end{tabular}
+
+Valid (and satisfiable).
+
+\textbf{3)} Knowledge base: Mythical ($Y$), Immortal ($I$), Mammal ($M$), Horned ($H$), Magical ($G$)
+
+\begin{itemize}
+\item $Y \implies I$
+\item $\neg Y \implies (\neg I \land M)$
+\item $(I \lor M) \implies H$
+\item $H \implies G$
+\end{itemize}
+
+\underline{CNF}
+
+$Y \implies I$
+
+$= (\neg Y \lor I)$
+
+$\neg Y \implies (\neg I \land M)$
+
+$= Y \lor (\neg I \land M)$
+
+$= (Y \lor \neg I) \land (Y \lor M)$
+
+$(I \lor M) \implies H$
+
+$= \neg (I \lor M) \lor H$
+
+$= (\neg I \land \neg M) \lor H$
+
+$= (H \lor \neg I) \land (H \lor \neg M)$
+
+$H \implies G$
+
+$= (\neg H \lor G)$
+
+CNF: $(\neg Y \lor I) \land (Y \lor \neg I) \land (Y \lor M) \land (H \lor \neg I) \land (H \lor \neg M) \land (\neg H \lor G)$
+
+\begin{enumerate}
+\item $(\neg Y \lor I)$
+\item $(Y \lor \neg I)$
+\item $(Y \lor M)$
+\item $(H \lor \neg I)$
+\item $(H \lor \neg M)$
+\item $(\neg H \lor G)$
+\end{enumerate}
+
+\clearpage
+
+\underline{Prove Mythical ($Y$)}:
+
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item $\neg Y$ (Try to find contradiction)
+\item $\neg I$ (2, 7)
+\item $M$ (3, 7)
+\item $H$ (5, 9)
+\item $G$ (6, 10)
+\end{enumerate}
+
+No contradictions found, cannot prove that the unicorn is mythical with this knowledge base.
+
+\underline{Prove Magical ($G$)}:
+
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item $\neg G$ (Try to find contradiction)
+\item $\neg H$ (6, 7)
+\item $\neg I$ (4, 8)
+\item $\neg M$ (5, 8)
+\item $Y$ (3, 10)
+\item $I$ (1, 11)
+\end{enumerate}
+
+Statements 9 and 12 contradict each other, so the unicorn must be magical.
+
+\underline{Prove Horned ($H$)}:
+
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item $\neg H$ (Try to find contradiction)
+\item $\neg I$ (6, 7)
+\item $\neg M$ (5, 8)
+\item $Y$ (3, 9)
+\item $I$ (1, 10)
+\end{enumerate}
+
+Statements 8 and 11 contradict each other, so the unicorn must be horned.
+
+\end{document}  

@@ -155,7 +155,7 @@
   (let* (
     (pure (pure_literals nd ns n)) (nd2 (car pure)) (ns2 (cadr pure)))
   (if
-    (equal ns2 sol)
+    (= (length ns2) (length sol))
     (let* (
       ; find a literal to split on
       (lit (find_lit ns2 n))

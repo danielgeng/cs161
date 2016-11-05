@@ -17,35 +17,87 @@
 ; "node n gets color c" (when there are k possible colors).
 ;
 (defun node2var (n c k)
+  (cond
+    ((or (< n 1) (< c 1) (< k 1) (< k c)) nil)
+    (t (+ (* (- n 1) k) c))
   )
+)
+
+; returns negation of n
+(defun neg (n) 
+  (* n -1)
+)
 
 ; EXERCISE: Fill this function
 ; returns *a clause* for the constraint:
 ; "node n gets at least one color from the set {c,c+1,...,k}."
 ;
 (defun at-least-one-color (n c k)
+  (cond
+    ((= c k) (list (node2var n c k)))
+    (t (append (list (node2var n c k)) (at-least-one-color n (+ c 1) k)))
   )
+)
 
 ; EXERCISE: Fill this function
 ; returns *a list of clauses* for the constraint:
 ; "node n gets at most one color from the set {c,c+1,...,k}."
 ;
 (defun at-most-one-color (n c k)
+  (at-most_helper (at-least-one-color n c k))
+)
+
+; input: a list of positive literals l
+; output: list of permutations of each negated item in list
+(defun at-most_helper (l)
+  (cond 
+    ((< (length l) 2) nil) ; nothing to permute
+    (t (append
+      (at-most_helper2 (neg (car l)) (cdr l))
+      (at-most_helper (cdr l))
+    ))
   )
+)
+
+; input: a negative literal x, a list of positive literals l
+; output: list of lists of all negated permutations
+(defun at-most_helper2 (x l)
+  (cond 
+    ((null l) nil)
+    (t (append
+      (list (list x (neg (car l))))
+      (at-most_helper2 x (cdr l))
+    ))
+  )
+)
 
 ; EXERCISE: Fill this function
 ; returns *a list of clauses* to ensure that
 ; "node n gets exactly one color from the set {1,2,...,k}."
 ;
 (defun generate-node-clauses (n k)
-  )
+  (append (list (at-least-one-color n 1 k)) (at-most-one-color n 1 k))
+)
 
 ; EXERCISE: Fill this function
 ; returns *a list of clauses* to ensure that
 ; "the nodes at both ends of edge e cannot have the same color from the set {1,2,...,k}."
 ;
 (defun generate-edge-clauses (e k)
+  (let ((x (car e)) (y (cadr e)))
+    (generate-edge_helper x y 1 k) ; just recurse from c=1...k
   )
+)
+
+(defun generate-edge_helper (x y c k)
+  (cond 
+    ((< k c) nil)
+    (t (append
+      (list (list (neg (node2var x c k)) (neg (node2var y c k))))
+      (generate-edge_helper x y (+ c 1) k)
+    ))
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Your exercises end here. Below are top-level

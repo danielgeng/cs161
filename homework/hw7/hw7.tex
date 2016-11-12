@@ -1,0 +1,110 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[margin={1in}]{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for rotated page geometry
+\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\setlength{\headsep}{5pt}
+\usepackage{mathtools}
+\pagenumbering{gobble}
+
+%SetFonts
+
+%SetFonts
+
+
+\title{CS161: Homework \#7}
+\author{Daniel Geng\\ID: 504588536}
+\date{Fall 2016}							% Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+\textbf{1)} Generalized product rule: Prove $P(A,B | K) = P(A | B,K)P(B|K)$
+\begin{equation*} P(A,B|K) = \frac{P(A,B,K)}{P(K)} = \frac{P(A|B,K)P(B|K)P(K)}{P(K)} = P(A|B,K)P(B|K) \end{equation*}
+
+Generalized Bayes' rule: Prove $P(A|B,K) = P(B|A,K)P(A|K) / P(B|K)$
+\begin{equation*} P(A|B,K) = \frac{P(B,K|A)P(A)}{P(B,K)} = \frac{P(B|K,A)P(K|A)P(A)}{P(B,K)} = \frac{P(B|K,A)P(A|K)P(K)}{P(B,K)} \end{equation*} \begin{equation*} = \frac{P(B|A,K)P(A|K)P(K)}{P(B|K)P(K)} = \frac{P(B|A,K)P(A|K)}{P(B|K)} \end{equation*}
+
+\textbf{2)} $P(oil) = 0.5$
+
+$P(natural) = 0.2$
+
+$P(neither) = 0.3$
+
+$P(positive|oil) = 0.9$
+
+$P(positive|natural) = 0.3$
+
+$P(positive|neither) = 0.1$
+
+\begin{equation*} P(oil|positive) = \frac{P(positive|oil)P(oil)}{P(positive)} \end{equation*}
+\begin{equation*} P(positive) = P(positive|oil)P(oil) + P(positive|natural)P(natural) + P(positive|neither)P(neither) \end{equation*}
+\begin{equation*} P(positive) = (0.9*0.5) + (0.3*0.2) + (0.1*0.3) = 0.54 \end{equation*}
+\begin{equation*} P(oil|positive) = \frac{0.9*0.5}{0.54} = 0.8\bar{3} \end{equation*}
+
+\textbf{3)}
+
+\begin{tabular}{ c | c | c | c | c }
+World & Black & Square & One & $P()$ \\ 
+\hline
+1 & 0 & 0 & 0 & 1/13 \\
+2 & 0 & 0 & 1 & 1/13 \\
+3 & 0 & 1 & 0 & 1/13 \\
+4 & 0 & 1 & 1 & 1/13 \\
+5 & 1 & 0 & 0 & 2/13 \\
+6 & 1 & 0 & 1 & 1/13 \\
+7 & 1 & 1 & 0 & 4/13 \\
+8 & 1 & 1 & 1 & 2/13 \\
+\end{tabular}
+
+$P(\alpha_1) = P(\omega_5) + P(\omega_6) + P(\omega_7) + P(\omega_8) = 9/13$
+
+$P(\alpha_2) = P(\omega_3) + P(\omega_4) + P(\omega_7) + P(\omega_8) = 8/13$
+
+$P(\alpha_3) = P(square | one \lor black) = P(square, (one \lor black)) / P(one \lor black)$
+
+$P(\alpha_3) = \frac{P(\omega_4) + P(\omega_7) + P(\omega_8)}{P(\omega_2) + P(\omega_4) + P(\omega_5) + P(\omega_6) + P(\omega_7) + P(\omega_8)} = \frac{7/13}{11/13} = 7/11$
+
+Find sentences that show $\alpha$ is independent of $\beta$ given $\gamma$: $P(\alpha | \gamma) = P(\alpha | \beta, \gamma)$
+
+$\alpha = one, \beta = square, \gamma = \lnot black$: $P(one | \lnot black) = 2/4$, $P(one | \lnot black, square) = 1/2$
+
+$\alpha = one, \beta = square, \gamma = black$: $P(one | black) = 3/9$, $P(one | black, square) = 2/6$
+
+\textbf{4)} a) $I(A, \varnothing, \{B, E\})$
+
+$I(B, \varnothing, \{A, C\})$
+
+$I(C, A, \{B, D, E\})$
+
+$I(D, \{A, B\}, \{C, E\})$
+
+$I(E, B, \{A,C,D,F,G\})$
+
+$I(F, \{C,D\}, \{A, B, E\})$
+
+$I(G, F, \{A,B,C,D,E,H\})$
+
+$I(H, \{E, F\}, \{A,B,C,D,G\})$
+
+b) $d\_sep(A, BH, E)$ is false because path $ACFHE$ is unblocked.
+
+$d\_sep(G,D,E)$ is false because path $GFCADBE$ is unblocked.
+
+$d\_sep(AB, F, GH)$ is false because path $BEH$ is unblocked.
+
+c) $P(a,b,c,d,e,f,g,h) = $ 
+
+$P(a|b,c,d,e,f,g,h)P(b|c,d,e,f,g,h)P(c|d,e,f,g,h)P(d|e,f,g,h)P(e|f,g,h)P(f|g,h)P(g|h)P(h)$
+
+d) $P(A = 0, B = 0) = P(A = 0)P(B=0) = 0.8 * 0.3 = 0.24$
+
+$E$ and $A$ are independent, so just find $P(E = 1)$. 
+
+$P(E=1) = P(E=1|B=0)P(B=0) + P(E=1|B=1)P(B=1) = 0.9*0.3 + 0.1 * 0.7 = 0.34$
+
+\end{document}  

@@ -1,0 +1,46 @@
+Daniel Geng
+504588536
+Fall 2016
+
+Homework #8
+
+1. Constraints for Pr(D=yes|T=yes) >= 0.3:
+Pr(D=yes) >= 0.08942
+Pr(T=no|D=yes) >= 0.005966 (false positive)
+Pr(T=yes|D=no) >= 0.002322 (false negative)
+
+2.
+a) Given LightSensor=On and DogBarking=No, the following instantiation was obtained:
+ExpectingGuests: No
+FamilyHome: No
+OutdoorLight: On
+LightSensor: On
+Battery: OK
+LightSensorHealth: OK
+SoundSensor: Off
+SoundSensorHealth: OK
+DogBowelTrouble: Yes
+DogOutside: Yes
+DogBarking: No
+HearableBarking: No
+
+These values were obtained by using Query mode in Samiam and setting the posterior values for
+LightSensor and DogBarking.
+
+b) Given FamilyHome=Yes and ExpectingGuests=No:
+LightSensor: Off
+Battery: OK
+LightSensorHealth: OK
+SoundSensor: Off
+SoundSensorHealth: OK
+
+These values were obtained using the same method as 2a.
+
+c) Adding Battery to Z will block the path LightSensor -> Battery -> SoundSensor
+Adding FamilyHome to Z will block the path LightSensor -> OutdoorLight -> FamilyHome ->
+DogOutside -> DogBarking -> HearableBarking -> SoundSensor
+
+Therefore, Z = {Battery, FamilyHome} because LightSensor and SoundSensor are d-separated so
+they are independent given Z.
+
+d) This network is a multiply-connected network.
